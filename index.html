@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>矩阵发布面板</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --line: #d9dee7;
+      --text: #1f2937;
+      --muted: #64748b;
+      --accent: #0f766e;
+      --accent-2: #2563eb;
+      --warn: #b45309;
+      --danger: #b91c1c;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    header {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 56px);
+    }
+
+    aside {
+      border-right: 1px solid var(--line);
+      background: #fbfcfe;
+      padding: 16px;
+    }
+
+    section {
+      padding: 18px 22px 28px;
+    }
+
+    .tabs {
+      display: grid;
+      gap: 8px;
+    }
+
+    .tab {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      padding: 10px 12px;
+      text-align: left;
+      border-radius: 6px;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .tab.active {
+      background: #e8f5f3;
+      border-color: #b7d9d4;
+      color: #0b5f58;
+      font-weight: 700;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+
+    .row {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      padding: 9px 10px;
+      font: inherit;
+      min-height: 38px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 92px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font: inherit;
+      min-height: 38px;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    button.secondary {
+      background: var(--accent-2);
+      color: #fff;
+      border-color: var(--accent-2);
+    }
+
+    button.danger {
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .name {
+      font-weight: 700;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      border-radius: 999px;
+      padding: 0 8px;
+      background: #eef2f7;
+      color: #334155;
+      font-size: 12px;
+    }
+
+    .chip.ok { background: #dcfce7; color: #166534; }
+    .chip.warn { background: #fef3c7; color: var(--warn); }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .hidden { display: none; }
+
+    .queue {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .queue th, .queue td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .queue th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0f172a;
+      color: #e2e8f0;
+      max-height: 340px;
+      overflow: auto;
+    }
+
+    .notice {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1e3a8a;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    .api-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .api-status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f59e0b;
+    }
+
+    .api-status.ok::before { background: #16a34a; }
+    .api-status.fail::before { background: #dc2626; }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+      aside { border-right: 0; border-bottom: 1px solid var(--line); }
+      .grid, .grid-3 { grid-template-columns: 1fr; }
+      header { align-items: flex-start; height: auto; padding: 14px; gap: 10px; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>矩阵发布面板</h1>
+    <div class="top-actions">
+      <span id="apiStatus" class="api-status">后端未检测</span>
+      <button id="exportBtn">导出配置</button>
+      <button id="importBtn">导入配置</button>
+      <button id="resetBtn" class="danger">清空示例</button>
+      <input id="importFile" class="hidden" type="file" accept="application/json">
+    </div>
+  </header>
+
+  <main>
+    <aside>
+      <div class="tabs">
+        <button class="tab active" data-view="accounts">账号库</button>
+        <button class="tab" data-view="groups">账号分组</button>
+        <button class="tab" data-view="works">作品库</button>
+        <button class="tab" data-view="queue">发布队列</button>
+        <button class="tab" data-view="messages">消息中心</button>
+      </div>
+    </aside>
+
+    <section>
+      <div id="view-accounts" class="view"></div>
+      <div id="view-groups" class="view hidden"></div>
+      <div id="view-works" class="view hidden"></div>
+      <div id="view-queue" class="view hidden"></div>
+      <div id="view-messages" class="view hidden"></div>
+    </section>
+  </main>
+
+  <script>
+    const platforms = [
+      { id: "douyin", name: "抖音", command: "douyin" },
+      { id: "xiaohongshu", name: "小红书", command: "xiaohongshu" },
+      { id: "shipinhao", name: "视频号", command: "tencent" }
+    ];
+
+    const stateKey = "matrixPublisherPanel.v1";
+    const defaultState = {
+      accounts: [
+        { id: crypto.randomUUID(), platform: "douyin", alias: "岳井民宿-抖音", loginName: "yuejing_douyin", groupId: "" },
+        { id: crypto.randomUUID(), platform: "xiaohongshu", alias: "岳井民宿-小红书", loginName: "yuejing_xhs", groupId: "" },
+        { id: crypto.randomUUID(), platform: "shipinhao", alias: "岳井民宿-视频号", loginName: "yuejing_sph", groupId: "" }
+      ],
+      groups: [
+        { id: crypto.randomUUID(), name: "岳井民宿主账号组", workId: "" }
+      ],
+      works: [
+        {
+          id: crypto.randomUUID(),
+          title: "象山海边民宿，出门三分钟到沙滩",
+          desc: "适合亲子、赶海、吃海鲜的周末旅行。",
+          tags: "民宿,海边民宿,象山旅游,赶海",
+          videoPath: "D:/videos/demo.mp4",
+          imagePaths: "",
+          type: "video"
+        }
+      ]
+    };
+
+    let state = loadState();
+    let apiReady = false;
+    if (state.groups[0] && !state.accounts.some(a => a.groupId)) {
+      state.accounts.forEach(a => a.groupId = state.groups[0].id);
+      state.groups[0].workId = state.works[0]?.id || "";
+      saveState();
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(stateKey);
+        return raw ? JSON.parse(raw) : structuredClone(defaultState);
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(stateKey, JSON.stringify(state, null, 2));
+    }
+
+    function platformName(id) {
+      return platforms.find(p => p.id === id)?.name || id;
+    }
+
+    function optionList(items, selected, emptyText) {
+      return [
+        `<option value="">${emptyText}</option>`,
+        ...items.map(item => `<option value="${item.id}" ${item.id === selected ? "selected" : ""}>${escapeHtml(item.name || item.alias || item.title)}</option>`)
+      ].join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, s => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[s]));
+    }
+
+    function render() {
+      renderAccounts();
+      renderGroups();
+      renderWorks();
+      renderQueue();
+    }
+
+    function renderAccounts() {
+      document.querySelector("#view-accounts").innerHTML = `
+        <div class="notice">账号只记录别名和发布用账号名，不保存密码。真实登录态建议由 Chrome Profile 或 sau 的账号 cookie 文件维护。</div>
+        <div class="grid">
+          <div class="panel">
+            <h2>添加账号</h2>
+            <div class="row">
+              <label>平台</label>
+              <select id="accountPlatform">${platforms.map(p => `<option value="${p.id}">${p.name}</option>`).join("")}</select>
+            </div>
+            <div class="row">
+              <label>账号别名</label>
+              <input id="accountAlias" placeholder="例如：岳井民宿-抖音">
+            </div>
+            <div class="row">
+              <label>sau account_name / Chrome Profile 名</label>
+              <input id="accountLoginName" placeholder="例如：yuejing_douyin">
+            </div>
+            <div class="row">
+              <label>所属分组</label>
+              <select id="accountGroup">${optionList(state.groups, "", "暂不分组")}</select>
+            </div>
+            <button class="primary" id="addAccount">添加账号</button>
+          </div>
+          <div class="panel">
+            <h2>账号概览</h2>
+            <div class="chips">
+              ${platforms.map(p => `<span class="chip">${p.name}: ${state.accounts.filter(a => a.platform === p.id).length}</span>`).join("")}
+              <span class="chip ok">总账号: ${state.accounts.length}</span>
+            </div>
+          </div>
+        </div>
+        <div class="list">
+          ${state.accounts.map(account => `
+            <div class="item">
+              <div class="item-head">
+                <div>
+                  <div class="name">${escapeHtml(account.alias)}</div>
+                  <div class="muted">${platformName(account.platform)} | ${escapeHtml(account.loginName || "未填写账号名")}</div>
+                  <div class="muted">分组：${escapeHtml(state.groups.find(g => g.id === account.groupId)?.name || "未分组")}</div>
+                </div>
+                <button class="danger" data-delete-account="${account.id}">删除</button>
+              </div>
+            </div>
+          `).join("") || `<div class="item muted">还没有账号。</div>`}
+        </div>
+      `;
+
+      document.querySelector("#addAccount").onclick = () => {
+        const alias = document.querySelector("#accountAlias").value.trim();
+        const loginName = document.querySelector("#accountLoginName").value.trim();
+        if (!alias) return alert("请填写账号别名");
+        state.accounts.push({
+          id: crypto.randomUUID(),
+          platform: document.querySelector("#accountPlatform").value,
+          alias,
+          loginName,
+          groupId: document.querySelector("#accountGroup").value
+        });
+        saveState();
+        render();
+      };
+
+      document.querySelectorAll("[data-delete-account]").forEach(btn => {
+        btn.onclick = () => {
+          state.accounts = state.accounts.filter(a => a.id !== btn.dataset.deleteAccount);
+          saveState();
+          render();
+        };
+      });
+    }
+
+    function renderGroups() {
+      document.querySelector("#view-groups").innerHTML = `
+        <div class="notice">分组决定“哪些账号同步发布同一份作品”。每个分组可以绑定一份作品，生成队列时会按平台拆成多条任务。</div>
+        <div class="grid">
+          <div class="panel">
+            <h2>新建分组</h2>
+            <div class="row">
+              <label>分组名称</label>
+              <input id="groupName" placeholder="例如：民宿主账号组">
+            </div>
+            <div class="row">
+              <label>绑定作品</label>
+              <select id="groupWork">${optionList(state.works, "", "先不绑定")}</select>
+            </div>
+            <button class="primary" id="addGroup">新建分组</button>
+          </div>
+          <div class="panel">
+            <h2>分组说明</h2>
+            <div class="muted">例：A 组包含抖音、小红书、视频号三个账号，绑定“作品 1”；B 组也包含三个平台账号，绑定“作品 2”。生成队列后两组互不影响。</div>
+          </div>
+        </div>
+        <div class="list">
+          ${state.groups.map(group => {
+            const accounts = state.accounts.filter(a => a.groupId === group.id);
+            return `
+              <div class="item">
+                <div class="item-head">
+                  <div>
+                    <div class="name">${escapeHtml(group.name)}</div>
+                    <div class="muted">绑定作品：${escapeHtml(state.works.find(w => w.id === group.workId)?.title || "未绑定")}</div>
+                  </div>
+                  <button class="danger" data-delete-group="${group.id}">删除</button>
+                </div>
+                <div class="grid-3">
+                  ${platforms.map(p => {
+                    const selected = accounts.find(a => a.platform === p.id)?.id || "";
+                    const platformAccounts = state.accounts.filter(a => a.platform === p.id);
+                    return `
+                      <div class="row">
+                        <label>${p.name}账号</label>
+                        <select data-group-account="${group.id}" data-platform="${p.id}">
+                          ${optionList(platformAccounts, selected, "不发布到该平台")}
+                        </select>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+                <div class="row">
+                  <label>该分组发布作品</label>
+                  <select data-group-work="${group.id}">
+                    ${optionList(state.works, group.workId, "未绑定作品")}
+                  </select>
+                </div>
+              </div>
+            `;
+          }).join("") || `<div class="item muted">还没有分组。</div>`}
+        </div>
+      `;
+
+      document.querySelector("#addGroup").onclick = () => {
+        const name = document.querySelector("#groupName").value.trim();
+        if (!name) return alert("请填写分组名称");
+        state.groups.push({ id: crypto.randomUUID(), name, workId: document.querySelector("#groupWork").value });
+        saveState();
+        render();
+      };
+
+      document.querySelectorAll("[data-delete-group]").forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.deleteGroup;
+          state.groups = state.groups.filter(g => g.id !== id);
+          state.accounts.forEach(a => { if (a.groupId === id) a.groupId = ""; });
+          saveState();
+          render();
+        };
+      });
+
+      document.querySelectorAll("[data-group-account]").forEach(select => {
+        select.onchange = () => {
+          const groupId = select.dataset.groupAccount;
+          const platform = select.dataset.platform;
+          state.accounts.forEach(a => {
+            if (a.groupId === groupId && a.platform === platform) a.groupId = "";
+          });
+          const account = state.accounts.find(a => a.id === select.value);
+          if (account) account.groupId = groupId;
+          saveState();
+          render();
+        };
+      });
+
+      document.querySelectorAll("[data-group-work]").forEach(select => {
+        select.onchange = () => {
+          const group = state.groups.find(g => g.id === select.dataset.groupWork);
+          if (group) group.workId = select.value;
+          saveState();
+          render();
+        };
+      });
+    }
+
+    function renderWorks() {
+      document.querySelector("#view-works").innerHTML = `
+        <div class="grid">
+          <div class="panel">
+            <h2>添加作品</h2>
+            <div class="row">
+              <label>作品类型</label>
+              <select id="workType">
+                <option value="video">视频</option>
+                <option value="note">图文</option>
+              </select>
+            </div>
+            <div class="row">
+              <label>标题</label>
+              <input id="workTitle" placeholder="发布标题">
+            </div>
+            <div class="row">
+              <label>正文/简介</label>
+              <textarea id="workDesc" placeholder="视频简介或图文正文"></textarea>
+            </div>
+            <div class="row">
+              <label>话题标签，用英文逗号分隔</label>
+              <input id="workTags" placeholder="民宿,旅行,探店">
+            </div>
+            <div class="row">
+              <label>视频文件路径</label>
+              <input id="workVideo" placeholder="D:/videos/demo.mp4">
+            </div>
+            <div class="row">
+              <label>图片路径，多个用英文逗号分隔</label>
+              <input id="workImages" placeholder="D:/images/1.png,D:/images/2.png">
+            </div>
+            <button class="primary" id="addWork">添加作品</button>
+          </div>
+          <div class="panel">
+            <h2>作品规则</h2>
+            <div class=”muted”>视频作品会生成 upload-video 命令。图文作品会生成 upload-note 命令。视频号通过 <code>sau tencent</code> 命令发布到 channels.weixin.qq.com。</div>
+          </div>
+        </div>
+        <div class="list">
+          ${state.works.map(work => `
+            <div class="item">
+              <div class="item-head">
+                <div>
+                  <div class="name">${escapeHtml(work.title)}</div>
+                  <div class="muted">${work.type === "video" ? "视频" : "图文"} | ${escapeHtml(work.tags)}</div>
+                  <div class="muted">${escapeHtml(work.desc)}</div>
+                </div>
+                <button class="danger" data-delete-work="${work.id}">删除</button>
+              </div>
+              <div class="chips">
+                ${work.videoPath ? `<span class="chip">视频: ${escapeHtml(work.videoPath)}</span>` : ""}
+                ${work.imagePaths ? `<span class="chip">图片: ${escapeHtml(work.imagePaths)}</span>` : ""}
+              </div>
+            </div>
+          `).join("") || `<div class="item muted">还没有作品。</div>`}
+        </div>
+      `;
+
+      document.querySelector("#addWork").onclick = () => {
+        const title = document.querySelector("#workTitle").value.trim();
+        if (!title) return alert("请填写作品标题");
+        state.works.push({
+          id: crypto.randomUUID(),
+          type: document.querySelector("#workType").value,
+          title,
+          desc: document.querySelector("#workDesc").value.trim(),
+          tags: document.querySelector("#workTags").value.trim(),
+          videoPath: document.querySelector("#workVideo").value.trim(),
+          imagePaths: document.querySelector("#workImages").value.trim()
+        });
+        saveState();
+        render();
+      };
+
+      document.querySelectorAll("[data-delete-work]").forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.deleteWork;
+          state.works = state.works.filter(w => w.id !== id);
+          state.groups.forEach(g => { if (g.workId === id) g.workId = ""; });
+          saveState();
+          render();
+        };
+      });
+    }
+
+    function buildQueue() {
+      const queue = [];
+      for (const group of state.groups) {
+        const work = state.works.find(w => w.id === group.workId);
+        const accounts = state.accounts.filter(a => a.groupId === group.id);
+        for (const account of accounts) {
+          const platform = platforms.find(p => p.id === account.platform);
+          const ready = Boolean(work && account.loginName);
+          queue.push({
+            group,
+            work,
+            account,
+            platform,
+            status: ready ? "ready" : "missing"
+          });
+        }
+      }
+      return queue;
+    }
+
+    function commandFor(task) {
+      if (!task.work || !task.platform) return "";
+      const tags = task.work.tags ? ` --tags "${task.work.tags}"` : "";
+      if (task.work.type === "note") {
+        const images = task.work.imagePaths.split(",").map(s => s.trim()).filter(Boolean).map(s => `"${s}"`).join(" ");
+        return `sau ${task.platform.command} upload-note --account ${task.account.loginName} --images ${images} --title "${task.work.title}" --note "${task.work.desc}"${tags} --headed`;
+      }
+      return `sau ${task.platform.command} upload-video --account ${task.account.loginName} --file "${task.work.videoPath}" --title "${task.work.title}" --desc "${task.work.desc}"${tags} --headed`;
+    }
+
+    function renderQueue() {
+      const queue = buildQueue();
+      const commands = queue.map(commandFor).filter(Boolean).join("\n");
+      document.querySelector("#view-queue").innerHTML = `
+        <div class="notice">这里先生成发布队列和命令，不自动发布。确认没问题后再逐条执行或接入自动化。</div>
+        <div class="toolbar">
+          <button class="secondary" id="copyCommands">复制命令</button>
+          <button id="downloadPlan">下载发布计划</button>
+        </div>
+        <table class="queue">
+          <thead>
+            <tr>
+              <th>分组</th>
+              <th>平台账号</th>
+              <th>作品</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${queue.map((task, index) => `
+              <tr>
+                <td>${escapeHtml(task.group.name)}</td>
+                <td>${escapeHtml(platformName(task.account.platform))}<br><span class="muted">${escapeHtml(task.account.alias)} / ${escapeHtml(task.account.loginName || "未填写")}</span></td>
+                <td>${escapeHtml(task.work?.title || "未绑定作品")}<br><span class="muted">${escapeHtml(task.work?.type === "note" ? "图文" : "视频")}</span></td>
+                <td><span class="chip ${task.status === "ready" ? "ok" : "warn"}">${task.status === "ready" ? "可生成" : "缺信息"}</span></td>
+                <td>
+                  <div class="toolbar" style="margin:0">
+                    <button data-task-action="check" data-task-index="${index}">检查</button>
+                    <button data-task-action="login" data-task-index="${index}">登录</button>
+                    <button class="secondary" data-task-action="upload" data-task-index="${index}" ${task.work?.type !== "video" ? "disabled" : ""}>发布视频</button>
+                  </div>
+                </td>
+              </tr>
+            `).join("") || `<tr><td colspan="5" class="muted">还没有队列。请先建账号、分组和作品。</td></tr>`}
+          </tbody>
+        </table>
+        <h2 style="margin-top:18px;font-size:16px;">命令预览</h2>
+        <pre id="commands">${escapeHtml(commands || "暂无命令")}</pre>
+        <h2 style="margin-top:18px;font-size:16px;">执行结果</h2>
+        <pre id="apiLog">尚未执行。</pre>
+      `;
+
+      document.querySelector("#copyCommands").onclick = async () => {
+        await navigator.clipboard.writeText(commands);
+        alert("已复制命令");
+      };
+
+      document.querySelector("#downloadPlan").onclick = () => {
+        downloadJson("publish-plan.json", { generatedAt: new Date().toISOString(), queue, commands });
+      };
+
+      document.querySelectorAll("[data-task-action]").forEach(button => {
+        button.onclick = () => runTask(queue[Number(button.dataset.taskIndex)], button.dataset.taskAction);
+      });
+    }
+
+    let notificationData = {};
+    let selectedMessageAccount = null;
+    let notificationTimer = null;
+
+    function renderMessages() {
+      const accounts = state.accounts || [];
+      const nd = notificationData;
+
+      document.querySelector("#view-messages").innerHTML = `
+        <div class="notice">消息中心通过已保存的登录会话检查各平台账号的通知数量。iframe 嵌入可能因平台限制不可用，可点击「在新窗口打开」直接操作。</div>
+        <div class="grid" style="grid-template-columns: 300px 1fr;">
+          <div class="panel" style="max-height: calc(100vh - 200px); overflow-y: auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <h2 style="margin:0;">账号列表</h2>
+              <button id="refreshNotifications" style="padding:4px 10px;min-height:28px;font-size:12px;">刷新</button>
+            </div>
+            <div class="list">
+              ${accounts.length ? accounts.map(acc => {
+                const data = nd[acc.id];
+                const counts = data?.counts || {};
+                const loggedIn = data?.logged_in;
+                const error = data?.error || "";
+                const selected = selectedMessageAccount === acc.id;
+                const countText = Object.entries(counts).map(([k, v]) => `${k}:${v === -1 ? '●' : v}`).join(" ") || "暂无数据";
+
+                let statusIcon = "⚪";
+                let statusClass = "";
+                if (loggedIn === true) statusIcon = "🟢";
+                else if (loggedIn === false) statusIcon = "🔴";
+                else statusIcon = "⚪";
+
+                return `
+                  <div class="item ${selected ? 'active' : ''}" style="cursor:pointer; ${selected ? 'border-color: var(--accent); background: #e8f5f3;' : ''}" data-select-msg="${acc.id}">
+                    <div class="item-head">
+                      <div>
+                        <div class="name">${statusIcon} ${escapeHtml(acc.alias)}</div>
+                        <div class="muted">${escapeHtml(platformName(acc.platform))} | ${escapeHtml(acc.loginName || "未填写")}</div>
+                        <div class="chips" style="margin-top:4px;">
+                          <span class="chip ${loggedIn === true ? 'ok' : loggedIn === false ? 'warn' : ''}">${countText}</span>
+                        </div>
+                        ${error ? `<div class="muted" style="color:var(--danger);">${escapeHtml(error)}</div>` : ""}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join("") : `<div class="item muted">还没有账号。请先在「账号库」中添加。</div>`}
+            </div>
+          </div>
+
+          <div class="panel" style="min-height: 500px; display: flex; flex-direction: column;">
+            ${selectedMessageAccount ? (() => {
+              const acc = accounts.find(a => a.id === selectedMessageAccount);
+              if (!acc) return `<div class="muted">请从左侧选择一个账号。</div>`;
+              const platKey = acc.platform === "shipinhao" ? "tencent" : acc.platform;
+              const proxyHosts = { douyin: "creator.douyin.com", xiaohongshu: "creator.xiaohongshu.com", shipinhao: "channels.weixin.qq.com" };
+              const host = proxyHosts[acc.platform] || "";
+              const msgPath = acc.platform === "shipinhao" ? "/platform/post/list" : "/";
+              const proxyUrl = `/proxy/${acc.platform}${msgPath}?account=${encodeURIComponent(acc.loginName)}`;
+
+              return `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <h2 style="margin:0;">${escapeHtml(acc.alias)} — ${escapeHtml(platformName(acc.platform))}</h2>
+                  <div style="display:flex; gap:8px;">
+                    <button id="openInBrowser" class="secondary" style="font-size:12px; padding:4px 10px; min-height:28px;">在新窗口打开</button>
+                  </div>
+                </div>
+                <div class="muted" style="margin-bottom:8px;">${host ? `目标: ${host}` : ""} | 由于平台安全策略，iframe 嵌入可能不可用。请优先使用「在新窗口打开」。</div>
+                <iframe id="msgIframe" src="${proxyUrl}" style="flex:1; width:100%; border:1px solid var(--line); border-radius:6px; min-height:450px;"
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                  onerror="this.style.display='none'; document.querySelector('#iframeFallback').classList.remove('hidden');">
+                </iframe>
+                <div id="iframeFallback" class="hidden" style="flex:1; display:flex; align-items:center; justify-content:center; border:1px solid var(--line); border-radius:6px; background:#f8fafc;">
+                  <div style="text-align:center;">
+                    <div class="muted" style="font-size:16px; margin-bottom:12px;">iframe 无法加载该平台</div>
+                    <div class="muted" style="margin-bottom:12px;">${escapeHtml(platformName(acc.platform))} 通常禁止被第三方页面嵌入</div>
+                    <button id="openInBrowserFallback" class="secondary">在新窗口打开</button>
+                  </div>
+                </div>
+              `;
+            })() : `<div class="muted" style="flex:1; display:flex; align-items:center; justify-content:center;">请从左侧选择一个账号查看消息。</div>`}
+          </div>
+        </div>
+      `;
+
+      // Account selection handler
+      document.querySelectorAll("[data-select-msg]").forEach(el => {
+        el.onclick = () => {
+          selectedMessageAccount = el.dataset.selectMsg;
+          renderMessages();
+        };
+      });
+
+      // Refresh button
+      const refreshBtn = document.querySelector("#refreshNotifications");
+      if (refreshBtn) {
+        refreshBtn.onclick = () => fetchNotifications();
+      }
+
+      // Open in browser buttons
+      const setupOpenBtn = (id, accId) => {
+        const btn = document.querySelector(`#${id}`);
+        if (!btn) return;
+        btn.onclick = async () => {
+          const acc = state.accounts.find(a => a.id === accId);
+          if (!acc) return;
+          setLog({running: `正在打开 ${acc.alias} 的消息页面...`});
+          const result = await apiPost("/api/open-messages", {
+            platform: acc.platform,
+            account: acc.loginName
+          });
+          setLog(result);
+        };
+      };
+      setupOpenBtn("openInBrowser", selectedMessageAccount);
+      setupOpenBtn("openInBrowserFallback", selectedMessageAccount);
+    }
+
+    async function fetchNotifications() {
+      const accounts = (state.accounts || []).filter(a => a.loginName);
+      if (!accounts.length) return;
+
+      try {
+        const result = await apiPost("/api/notifications", { accounts });
+        if (result.ok) {
+          const newData = {};
+          for (const r of result.results) {
+            const acc = accounts.find(a => a.loginName === r.loginName && a.platform === r.platform);
+            if (acc) newData[acc.id] = r;
+          }
+          notificationData = newData;
+        }
+      } catch {}
+
+      if (document.querySelector("#view-messages") && !document.querySelector("#view-messages").classList.contains("hidden")) {
+        renderMessages();
+      }
+    }
+
+    function startNotificationPolling() {
+      if (notificationTimer) clearInterval(notificationTimer);
+      fetchNotifications();
+      notificationTimer = setInterval(fetchNotifications, 60000);
+    }
+
+    async function apiPost(path, payload) {
+      const response = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      return await response.json();
+    }
+
+    function setLog(result) {
+      const log = document.querySelector("#apiLog");
+      if (!log) return;
+      log.textContent = JSON.stringify(result, null, 2);
+    }
+
+    async function runTask(task, action) {
+      if (!task?.account || !task.work) return alert("任务缺少账号或作品");
+
+      const base = {
+        platform: task.account.platform,
+        account: task.account.loginName
+      };
+
+      if (action === "check") {
+        setLog({ running: "正在检查登录状态..." });
+        setLog(await apiPost("/api/check", base));
+        return;
+      }
+
+      if (action === "login") {
+        setLog({ running: "正在打开登录流程。请在弹出的浏览器里扫码登录。" });
+        setLog(await apiPost("/api/login", { ...base, headed: true }));
+        return;
+      }
+
+      if (action === "upload") {
+        const message = `确认发布到 ${platformName(task.account.platform)} / ${task.account.alias}？\n\n标题：${task.work.title}\n文件：${task.work.videoPath}`;
+        if (!confirm(message)) return;
+        setLog({ running: "正在发布视频。请不要关闭浏览器窗口。" });
+        setLog(await apiPost("/api/upload-video", {
+          ...base,
+          confirm: true,
+          file: task.work.videoPath,
+          title: task.work.title,
+          desc: task.work.desc,
+          tags: task.work.tags
+        }));
+      }
+    }
+
+    async function checkApiStatus() {
+      const el = document.querySelector("#apiStatus");
+      try {
+        const response = await fetch("/api/status");
+        const data = await response.json();
+        apiReady = Boolean(data.ok);
+        el.className = "api-status ok";
+        el.textContent = data.venvReady ? "后端已连接" : "后端已连接，依赖未安装";
+      } catch {
+        apiReady = false;
+        el.className = "api-status fail";
+        el.textContent = "后端未启动";
+      }
+    }
+
+    function downloadJson(filename, data) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+        tab.classList.add("active");
+        document.querySelector(`#view-${tab.dataset.view}`).classList.remove("hidden");
+
+        if (tab.dataset.view === "messages") {
+          if (state.accounts.length && !selectedMessageAccount) {
+            selectedMessageAccount = state.accounts[0].id;
+          }
+          renderMessages();
+          startNotificationPolling();
+        } else {
+          if (notificationTimer) { clearInterval(notificationTimer); notificationTimer = null; }
+          render();
+        }
+      };
+    });
+
+    document.querySelector("#exportBtn").onclick = () => downloadJson("matrix-publisher-config.json", state);
+    document.querySelector("#importBtn").onclick = () => document.querySelector("#importFile").click();
+    document.querySelector("#importFile").onchange = async event => {
+      const file = event.target.files[0];
+      if (!file) return;
+      state = JSON.parse(await file.text());
+      saveState();
+      render();
+    };
+    document.querySelector("#resetBtn").onclick = () => {
+      if (!confirm("确认清空当前配置并恢复示例？")) return;
+      localStorage.removeItem(stateKey);
+      state = loadState();
+      render();
+    };
+
+    render();
+    checkApiStatus();
+  </script>
+</body>
+</html>
