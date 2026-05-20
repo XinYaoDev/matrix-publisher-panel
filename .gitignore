@@ -15,12 +15,6 @@ out/
 *.exe
 *.dll
 
-# Java
-backend-java/target/
-*.class
-*.jar
-*.war
-
 # IDE
 .idea/
 *.iml

@@ -1,72 +1,70 @@
 # Architecture
 
-## 系统概述
+## 系统概览
 
-Matrix Publisher 是一个多平台内容分发矩阵工具，核心能力是将一个视频/图文自动同步发布到小红书、抖音、视频号。
+Matrix Publisher 是一个多平台内容分发矩阵工具，目标是将视频、图文等内容发布到抖音、小红书、视频号等平台。
 
-## 架构决策
+当前架构保留 Python 服务作为业务主线。前端工程仍保留 Web/Desktop 骨架，后续可以逐步接入 Python API。
 
-### 技术栈
+## 技术栈
 
 | 层 | 技术 | 说明 |
-|---|------|------|
-| 桌面端 | Electron + electron-vite + React + TypeScript | 桌面管理面板 |
-| Web 端 | Next.js App Router | Web 管理后台 |
-| 后端 | Java 21 + Spring Boot 3 | REST API 服务 |
-| 数据库 | PostgreSQL 16 | 持久化存储 |
-| 上传器 | Python (social-auto-upload) | 实际平台上传能力，通过 ProcessBuilder 调用 |
-| 工程化 | pnpm workspace + Turborepo | 单体仓库管理 |
+| --- | --- | --- |
+| 当前服务 | Python `http.server` | `server.py` 提供页面、配置和发布相关 API |
+| 当前页面 | HTML + 浏览器原生 JS | `index.html` 是现阶段可用界面 |
+| 上传器 | Python | 调用或承载平台上传逻辑 |
+| 桌面端骨架 | Electron + React + TypeScript | 后续可迁移业务页面 |
+| Web 骨架 | Next.js App Router | 后续可作为管理后台 |
+| 前端工程化 | pnpm workspace + Turborepo | 管理前端 workspace |
 
-### 目录结构
+## 目录结构
 
-```
+```text
 matrix-publisher-panel/
+├── server.py              # Python HTTP 服务
+├── index.html             # 当前可用单页界面
+├── config.py              # Python 配置
+├── notification_scraper.py
+├── requirements.txt
+├── uploader-python/       # Python 上传器副本
 ├── apps/
-│   ├── desktop/          # Electron 桌面端
-│   └── web/              # Next.js Web 管理后台
-├── packages/
-│   ├── core/             # 共享类型、常量、API 封装
-│   ├── ui/               # 通用 UI 组件
-│   ├── views/            # 业务页面组件
-│   └── config/           # 共享 tsconfig/eslint/tailwind 配置
-├── backend-java/         # Spring Boot 3 后端
-├── uploader-python/      # Python 上传器（保留原逻辑）
-├── legacy/               # 旧项目说明
-├── docs/
-│   ├── architecture/     # 架构文档
-│   └── migration/        # 迁移记录
-├── docker-compose.yml    # PostgreSQL 本地开发环境
-├── pnpm-workspace.yaml   # pnpm 工作区配置
-├── turbo.json            # Turborepo 配置
-└── package.json          # 根 package.json
+│   ├── desktop/           # Electron 骨架
+│   └── web/               # Next.js 骨架
+├── packages/              # 前端共享类型、组件和页面骨架
+├── legacy/                # 旧项目说明
+└── docs/                  # 文档
 ```
 
-### 数据流
+## 当前数据流
 
-```
-前端 (Desktop/Web) → REST API → Java Backend → PostgreSQL
-                                         ↓
-                                  ProcessBuilder
-                                         ↓
-                                  Python Uploader
-                                         ↓
-                               social-auto-upload
-                                         ↓
-                          抖音 / 小红书 / 视频号 API
+```text
+Browser
+  -> index.html
+  -> Python server.py
+  -> Python uploader / notification_scraper
+  -> 平台上传或通知抓取能力
 ```
 
-### 包依赖关系
+## 目标数据流
 
+```text
+Desktop/Web
+  -> Python API
+  -> Python uploader
+  -> 抖音 / 小红书 / 视频号等平台
 ```
-apps/desktop → packages/views → packages/ui → packages/core
-apps/web    → packages/views → packages/ui → packages/core
-             packages/config (dev)
+
+## 前端依赖关系
+
+```text
+apps/desktop -> packages/views -> packages/ui -> packages/core
+apps/web     -> packages/views -> packages/ui -> packages/core
+packages/config is used for shared frontend tooling config.
 ```
 
 ## 关键设计决策
 
-1. **Python uploader 保留原样**：实际的平台上传能力由 `social-auto-upload` 提供。Java 后端通过 `ProcessBuilder` 调用 Python 脚本。这样避免重写已稳定的上传逻辑。
-
-2. **前后端分离**：桌面端和 Web 端共享 `packages/` 中的类型和组件，通过 REST API 与 Java 后端通信。
-
-3. **环境变量配置**：所有敏感信息（数据库密码、端口等）通过环境变量注入，不在代码中硬编码。
+1. **Python 优先**：实际业务和上传逻辑集中在 Python 侧。
+2. **前端渐进迁移**：先保留可运行的 `index.html + server.py`，再逐步将页面迁移到 React/Next/Electron。
+3. **轻量后端**：当前没有数据库强依赖。持久化方案应根据真实业务复杂度再决定。
+4. **上传能力独立**：`uploader-python/` 可继续沉淀上传、登录态检测、通知抓取等平台能力。
