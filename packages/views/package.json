@@ -1,0 +1,26 @@
+{
+  "name": "@matrix-publisher/views",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Business page views",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "echo 'TODO: views tests' && exit 0"
+  },
+  "dependencies": {
+    "@matrix-publisher/core": "workspace:*",
+    "@matrix-publisher/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@matrix-publisher/config": "workspace:*",
+    "@types/react": "^18.3.12",
+    "react": "^18.3.1",
+    "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1"
+  }
+}

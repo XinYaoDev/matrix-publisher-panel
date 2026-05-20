@@ -1,0 +1,19 @@
+{
+  "name": "matrix-publisher",
+  "private": true,
+  "version": "0.1.0",
+  "description": "多平台内容分发矩阵工具",
+  "scripts": {
+    "dev:desktop": "turbo run dev:desktop --filter=@matrix-publisher/desktop",
+    "dev:web": "turbo run dev:web --filter=@matrix-publisher/web",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
